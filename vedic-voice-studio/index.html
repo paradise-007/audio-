@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="sa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>वैदिक स्वर स्टूडियो — Vedic Voice Studio</title>
+  <meta name="description" content="AI-powered Sanskrit & Hindi voice cloning with Indian Classical Music composition. Vedic phonetics, Rāga-based melody, and Chhandas meter analysis.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Devanagari:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0c0a10;
+      --bg-secondary: #151218;
+      --bg-card: #1a1520;
+      --bg-card-hover: #221c2a;
+      --bg-input: #120f18;
+      --border: #2e2640;
+      --border-focus: #d4a843;
+      --text-primary: #f0e8d8;
+      --text-secondary: #a89880;
+      --text-muted: #6e6058;
+      --accent: #d4a843;
+      --accent-hover: #e4bc5a;
+      --accent-glow: rgba(212,168,67,0.2);
+      --saffron: #e87a24;
+      --saffron-glow: rgba(232,122,36,0.15);
+      --maroon: #8b1a1a;
+      --maroon-light: #b82e2e;
+      --gold: #d4a843;
+      --gold-light: #f0d080;
+      --chakra-blue: #1a4080;
+      --success: #5ab870;
+      --success-bg: rgba(90,184,112,0.1);
+      --error: #d45858;
+      --error-bg: rgba(212,88,88,0.1);
+      --warning: #d4a843;
+      --warning-bg: rgba(212,168,67,0.1);
+      --info: #6898c8;
+      --gradient-saffron: linear-gradient(135deg, #d4a843 0%, #e87a24 50%, #d45030 100%);
+      --gradient-gold: linear-gradient(135deg, #d4a843 0%, #f0d080 50%, #d4a843 100%);
+      --gradient-warm: linear-gradient(135deg, #0c0a10 0%, #1a1520 50%, #201828 100%);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.6);
+      --shadow-glow: 0 0 40px rgba(212,168,67,0.12);
+      --shadow-saffron: 0 0 30px rgba(232,122,36,0.10);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-lg: 16px;
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', 'Noto Sans Devanagari', -apple-system, system-ui, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ornamental background */
+    body::before {
+      content: '';
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 50% -10%, rgba(212,168,67,0.06), transparent),
+        radial-gradient(ellipse 50% 40% at 85% 80%, rgba(232,122,36,0.04), transparent),
+        radial-gradient(ellipse 40% 30% at 15% 70%, rgba(139,26,26,0.04), transparent);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* Decorative mandala-inspired top border */
+    body::after {
+      content: '';
+      position: fixed; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--gradient-saffron);
+      z-index: 100;
+    }
+
+    .app { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 24px 20px 80px; }
+
+    /* Header */
+    .header {
+      text-align: center; padding: 32px 0 28px;
+    }
+    .header-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--gradient-saffron); display: inline-flex;
+      align-items: center; justify-content: center;
+      font-size: 32px; margin-bottom: 16px;
+      box-shadow: var(--shadow-glow), 0 0 60px rgba(232,122,36,0.15);
+      border: 2px solid rgba(212,168,67,0.3);
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: var(--shadow-glow), 0 0 40px rgba(232,122,36,0.10); }
+      50% { box-shadow: var(--shadow-glow), 0 0 60px rgba(232,122,36,0.20); }
+    }
+    .header h1 {
+      font-size: 30px; font-weight: 800;
+      background: var(--gradient-gold); -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent; letter-spacing: -0.3px;
+    }
+    .header .header-sanskrit {
+      font-family: 'Noto Sans Devanagari', sans-serif;
+      font-size: 18px; color: var(--saffron);
+      margin-top: 4px; font-weight: 500;
+      letter-spacing: 1px;
+    }
+    .header p {
+      color: var(--text-secondary); font-size: 14px; margin-top: 8px;
+      max-width: 600px; margin-left: auto; margin-right: auto;
+    }
+
+    /* Decorative divider */
+    .divider {
+      text-align: center; margin: 8px 0 24px; color: var(--saffron);
+      font-size: 16px; letter-spacing: 8px; opacity: 0.5;
+    }
+
+    /* System Info Bar */
+    .system-info {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px 18px;
+      margin-bottom: 20px; display: flex; flex-wrap: wrap;
+      gap: 16px; font-size: 12px;
+    }
+    .system-info .info-item {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .system-info .info-label { color: var(--text-muted); }
+    .system-info .info-value { color: var(--text-primary); font-weight: 500; }
+    .system-info .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      display: inline-block;
+    }
+    .status-dot.green { background: var(--success); box-shadow: 0 0 6px rgba(90,184,112,0.4); }
+    .status-dot.yellow { background: var(--warning); box-shadow: 0 0 6px rgba(212,168,67,0.4); }
+    .status-dot.red { background: var(--error); box-shadow: 0 0 6px rgba(212,88,88,0.4); }
+    .status-dot.blue { background: var(--info); box-shadow: 0 0 6px rgba(104,152,200,0.4); }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 24px;
+      margin-bottom: 20px; transition: border-color var(--transition);
+      position: relative;
+    }
+    .card:hover { border-color: rgba(212,168,67,0.2); }
+    .card-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 16px; font-weight: 600; margin-bottom: 16px;
+    }
+    .card-title .step {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--gradient-saffron); color: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; flex-shrink: 0;
+    }
+    .card-title .title-devanagari {
+      font-family: 'Noto Sans Devanagari', sans-serif;
+      font-size: 13px; color: var(--saffron); font-weight: 500;
+      margin-left: 4px;
+    }
+
+    /* Drop zone */
+    .drop-zone {
+      border: 2px dashed var(--border); border-radius: var(--radius);
+      padding: 40px 20px; text-align: center; cursor: pointer;
+      transition: all var(--transition); position: relative;
+    }
+    .drop-zone:hover, .drop-zone.drag-over {
+      border-color: var(--accent); background: var(--accent-glow);
+    }
+    .drop-zone.has-file { border-style: solid; border-color: var(--success); background: var(--success-bg); }
+    .drop-zone-icon { font-size: 36px; margin-bottom: 8px; }
+    .drop-zone-text { color: var(--text-secondary); font-size: 14px; }
+    .drop-zone-text strong { color: var(--text-primary); }
+    .drop-zone-formats { color: var(--text-muted); font-size: 12px; margin-top: 6px; }
+    .drop-zone input[type="file"] { display: none; }
+
+    /* Audio info */
+    .audio-info {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px; background: var(--bg-input);
+      border-radius: var(--radius-sm); margin-top: 12px;
+    }
+    .audio-info .file-name {
+      flex: 1; font-size: 13px; font-weight: 500;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .audio-info .file-duration {
+      color: var(--text-muted); font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    /* Reference player */
+    .ref-player { margin-top: 12px; display: none; }
+    .ref-player.visible { display: block; }
+    .ref-player audio { width: 100%; height: 40px; border-radius: var(--radius-sm); }
+
+    /* Text input */
+    .text-area {
+      width: 100%; min-height: 180px; padding: 16px;
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--text-primary);
+      font-family: 'Noto Sans Devanagari', 'Inter', sans-serif;
+      font-size: 16px; line-height: 2;
+      resize: vertical; transition: border-color var(--transition);
+    }
+    .text-area:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .text-area::placeholder { color: var(--text-muted); font-size: 14px; }
+    .char-count {
+      text-align: right; font-size: 11px;
+      color: var(--text-muted); margin-top: 6px;
+    }
+
+    /* Script toggle */
+    .script-toggle {
+      display: flex; gap: 6px; margin-bottom: 12px;
+    }
+    .script-btn {
+      padding: 6px 14px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--bg-input);
+      color: var(--text-secondary); font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: all var(--transition);
+    }
+    .script-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+    .script-btn.active {
+      border-color: var(--accent); background: var(--accent-glow);
+      color: var(--accent);
+    }
+
+    /* Language selector */
+    .lang-row {
+      display: flex; gap: 10px; margin-bottom: 12px;
+    }
+    .lang-btn {
+      padding: 8px 18px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--bg-input);
+      color: var(--text-secondary); font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all var(--transition);
+    }
+    .lang-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+    .lang-btn.active {
+      border-color: var(--accent); background: var(--accent-glow);
+      color: var(--accent);
+    }
+
+    /* Rāga and Chhand selectors */
+    .param-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px; margin-bottom: 16px;
+    }
+    .param-group label {
+      display: block; font-size: 12px; color: var(--text-muted);
+      margin-bottom: 6px; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .param-select {
+      width: 100%; padding: 10px 14px;
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--text-primary);
+      font-size: 14px; font-family: inherit;
+      appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23a89880' stroke-width='1.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      transition: border-color var(--transition);
+    }
+    .param-select:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .param-select option { background: var(--bg-card); color: var(--text-primary); }
+
+    /* Tāla Tempo */
+    .tempo-row {
+      display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;
+    }
+    .tempo-btn {
+      padding: 6px 14px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--bg-input);
+      color: var(--text-secondary); font-size: 12px; font-weight: 500;
+      cursor: pointer; transition: all var(--transition);
+    }
+    .tempo-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+    .tempo-btn.active {
+      border-color: var(--saffron); background: var(--saffron-glow);
+      color: var(--saffron);
+    }
+
+    /* Generate button */
+    .generate-btn {
+      width: 100%; padding: 16px 24px;
+      background: var(--gradient-saffron); color: #fff;
+      border: none; border-radius: var(--radius);
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      transition: all var(--transition); position: relative;
+      overflow: hidden; letter-spacing: 0.3px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    .generate-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-glow), 0 0 30px rgba(232,122,36,0.2);
+    }
+    .generate-btn:active:not(:disabled) { transform: translateY(0); }
+    .generate-btn:disabled {
+      opacity: 0.5; cursor: not-allowed; filter: grayscale(0.3);
+    }
+    .generate-btn .spinner {
+      display: inline-block; width: 18px; height: 18px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Progress */
+    .progress-bar {
+      width: 100%; height: 6px; background: var(--bg-input);
+      border-radius: 3px; margin-top: 12px; overflow: hidden;
+      display: none;
+    }
+    .progress-bar.visible { display: block; }
+    .progress-fill {
+      height: 100%; background: var(--gradient-saffron);
+      border-radius: 3px; width: 0%;
+      transition: width 0.3s ease;
+    }
+    .progress-fill.indeterminate {
+      width: 40%; animation: indeterminate 1.5s ease-in-out infinite;
+    }
+    @keyframes indeterminate {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(350%); }
+    }
+    .status-text {
+      font-size: 13px; color: var(--text-secondary);
+      margin-top: 8px; min-height: 20px;
+    }
+
+    /* Output player */
+    .output-section { display: none; }
+    .output-section.visible { display: block; }
+    .output-player {
+      background: var(--bg-input); border-radius: var(--radius);
+      padding: 16px; margin-top: 12px;
+    }
+    .output-player audio { width: 100%; height: 44px; border-radius: var(--radius-sm); }
+    .download-row {
+      display: flex; gap: 10px; margin-top: 12px;
+    }
+    .download-btn {
+      flex: 1; padding: 10px 16px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: var(--bg-card);
+      color: var(--text-primary); font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all var(--transition);
+      text-align: center; text-decoration: none; display: block;
+    }
+    .download-btn:hover {
+      border-color: var(--accent); background: var(--accent-glow);
+    }
+
+    /* Phonetic Analysis Panel */
+    .analysis-panel {
+      display: none; margin-top: 16px;
+    }
+    .analysis-panel.visible { display: block; }
+    .analysis-header {
+      font-size: 14px; font-weight: 600; color: var(--gold);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+    .analysis-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 13px; margin-bottom: 16px;
+    }
+    .analysis-table th {
+      background: var(--bg-input); color: var(--text-muted);
+      padding: 8px 10px; text-align: left; font-weight: 600;
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+    .analysis-table td {
+      padding: 8px 10px; border-bottom: 1px solid rgba(46,38,64,0.5);
+      font-family: 'Noto Sans Devanagari', 'Inter', monospace;
+    }
+    .analysis-table tr:hover { background: rgba(212,168,67,0.03); }
+    .matra-1 { color: var(--info); font-weight: 600; }
+    .matra-2 { color: var(--saffron); font-weight: 700; }
+    .svara-udatta { color: var(--gold-light); }
+    .svara-anudatta { color: var(--text-muted); }
+    .svara-svarita { color: var(--saffron); font-weight: 600; }
+    .chhandas-box {
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px 16px;
+      font-family: 'Noto Sans Devanagari', monospace;
+      font-size: 13px; line-height: 1.8;
+    }
+    .chhandas-label {
+      color: var(--text-muted); font-size: 11px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    /* Alerts */
+    .alert {
+      padding: 12px 16px; border-radius: var(--radius-sm);
+      font-size: 13px; margin-top: 12px; display: none;
+    }
+    .alert.visible { display: flex; align-items: flex-start; gap: 8px; }
+    .alert.error { background: var(--error-bg); color: var(--error); border: 1px solid rgba(212,88,88,0.2); }
+    .alert.success { background: var(--success-bg); color: var(--success); border: 1px solid rgba(90,184,112,0.2); }
+    .alert.warning { background: var(--warning-bg); color: var(--warning); border: 1px solid rgba(212,168,67,0.2); }
+    .alert.info { background: rgba(104,152,200,0.1); color: var(--info); border: 1px solid rgba(104,152,200,0.2); }
+
+    /* Model info panel */
+    .model-panel {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+      font-size: 13px; margin-bottom: 20px;
+    }
+    .model-panel-title {
+      font-weight: 600; font-size: 14px; margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+      color: var(--gold);
+    }
+    .model-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px 24px;
+    }
+    .model-row {
+      display: flex; justify-content: space-between;
+      padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .model-row:last-child { border-bottom: none; }
+    .model-label { color: var(--text-muted); }
+    .model-value { font-weight: 500; }
+
+    /* Remove btn */
+    .remove-file {
+      background: none; border: none; color: var(--error);
+      cursor: pointer; font-size: 18px; padding: 4px;
+      line-height: 1; opacity: 0.7; transition: opacity var(--transition);
+    }
+    .remove-file:hover { opacity: 1; }
+
+    /* Footer */
+    .footer {
+      text-align: center; padding: 32px 0 16px;
+      border-top: 1px solid var(--border);
+      margin-top: 32px;
+    }
+    .footer p {
+      color: var(--text-muted); font-size: 12px;
+    }
+    .footer .footer-sanskrit {
+      font-family: 'Noto Sans Devanagari', sans-serif;
+      font-size: 14px; color: var(--saffron); opacity: 0.6;
+      margin-bottom: 6px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex; gap: 2px; margin-bottom: 16px;
+      background: var(--bg-input); border-radius: var(--radius-sm);
+      padding: 3px;
+    }
+    .tab-btn {
+      flex: 1; padding: 10px 16px; border: none;
+      background: transparent; color: var(--text-muted);
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      border-radius: 6px; transition: all var(--transition);
+    }
+    .tab-btn:hover { color: var(--text-secondary); }
+    .tab-btn.active {
+      background: var(--bg-card); color: var(--gold);
+      box-shadow: var(--shadow-sm);
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    @media (max-width: 640px) {
+      .app { padding: 12px 12px 40px; }
+      .card { padding: 16px; }
+      .header h1 { font-size: 22px; }
+      .model-grid { grid-template-columns: 1fr; }
+      .param-grid { grid-template-columns: 1fr; }
+      .lang-row, .tempo-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-icon">🕉️</div>
+    <h1>Vedic Voice Studio</h1>
+    <div class="header-sanskrit">वैदिक स्वर स्टूडियो</div>
+    <p>AI-powered Sanskrit & Hindi voice cloning with Indian Classical Music composition · Vedic phonetic analysis · 100% local</p>
+    <div style="margin-top:8px;font-size:11px;color:var(--text-muted);">Powered by <strong style="color:var(--saffron)">IndicF5</strong> (AI4Bharat) · <strong style="color:var(--gold)">XTTS v2</strong> (Coqui) · <strong style="color:var(--info)">Chatterbox</strong></div>
+  </div>
+  <div class="divider">◆ ◇ ◆ ◇ ◆</div>
+
+  <!-- System & Model Info -->
+  <div class="system-info" id="systemInfo">
+    <div class="info-item">
+      <span class="status-dot blue" id="statusDot"></span>
+      <span class="info-label">Status:</span>
+      <span class="info-value" id="statusText">Connecting...</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Device:</span>
+      <span class="info-value" id="deviceInfo">—</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Model:</span>
+      <span class="info-value" id="modelInfo">—</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Backend:</span>
+      <span class="info-value" id="backendInfo">—</span>
+    </div>
+  </div>
+
+  <!-- Model Info Panel -->
+  <!-- Engine Selector -->
+  <div class="model-panel" id="engineSelector">
+    <div class="model-panel-title">🎯 Voice Engine · ध्वनि इंजन</div>
+    <div class="lang-row" id="engineRow" style="margin-bottom:12px;">
+      <button class="lang-btn active" data-engine="indicf5" id="eng-indicf5" style="flex:1;">
+        🏛️ IndicF5 <small style="display:block;font-size:10px;opacity:0.7;">AI4Bharat · 11 Indian Languages · Best for Sanskrit/Hindi</small>
+      </button>
+      <button class="lang-btn" data-engine="xtts" id="eng-xtts" style="flex:1;">
+        🌍 XTTS v2 <small style="display:block;font-size:10px;opacity:0.7;">Coqui · 17 Languages incl. Hindi</small>
+      </button>
+      <button class="lang-btn" data-engine="chatterbox" id="eng-chatterbox" style="flex:1;">
+        💬 Chatterbox <small style="display:block;font-size:10px;opacity:0.7;">ResembleAI · Hindi + 22 Languages</small>
+      </button>
+      <button class="lang-btn" data-engine="luxtts" id="eng-luxtts" style="flex:1;">
+        ⚡ LuxTTS <small style="display:block;font-size:10px;opacity:0.7;">CPU-fast · English Only</small>
+      </button>
+    </div>
+    <div class="alert info visible" id="engineNote" style="display:flex; margin:0;">
+      <span>🏛️</span>
+      <span><strong>IndicF5 (Recommended)</strong> — AI4Bharat's F5-TTS model trained on 1,400+ hours of Indian speech. Best voice cloning for Sanskrit & Hindi. Accepts Devanagari script directly. Requires ~2GB VRAM or runs on CPU with 8GB+ RAM.</span>
+    </div>
+  </div>
+
+  <div class="model-panel" id="modelPanel" style="display:none;">
+    <div class="model-panel-title">⚡ Active Voice Model</div>
+    <div class="model-grid">
+      <div class="model-row"><span class="model-label">Engine</span><span class="model-value" id="mp-engine" style="color:var(--saffron)">IndicF5</span></div>
+      <div class="model-row"><span class="model-label">Model</span><span class="model-value" id="mp-model">—</span></div>
+      <div class="model-row"><span class="model-label">Device</span><span class="model-value" id="mp-device">—</span></div>
+      <div class="model-row"><span class="model-label">Model Size</span><span class="model-value" id="mp-size">—</span></div>
+      <div class="model-row"><span class="model-label">VRAM Used</span><span class="model-value" id="mp-vram">—</span></div>
+      <div class="model-row"><span class="model-label">Voice Cloning</span><span class="model-value" style="color:var(--success)">Enabled</span></div>
+      <div class="model-row"><span class="model-label">Indic Language</span><span class="model-value" style="color:var(--saffron)">Sanskrit / Hindi</span></div>
+      <div class="model-row"><span class="model-label">Output Sample Rate</span><span class="model-value" id="mp-sr">—</span></div>
+      <div class="model-row"><span class="model-label">GPU Accel</span><span class="model-value" id="mp-gpu">—</span></div>
+    </div>
+  </div>
+
+  <!-- Step 1: Reference Audio -->
+  <div class="card" id="step1">
+    <div class="card-title">
+      <span class="step">1</span> Reference Audio
+      <span class="title-devanagari">संदर्भ ध्वनि</span>
+    </div>
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-zone-icon">🎤</div>
+      <div class="drop-zone-text"><strong>Click to upload</strong> or drag & drop</div>
+      <div class="drop-zone-formats">WAV · MP3 · M4A · FLAC · OGG · AAC · WebM</div>
+      <input type="file" id="audioInput" accept=".wav,.mp3,.m4a,.flac,.ogg,.aac,.webm,.opus">
+    </div>
+    <div class="audio-info" id="audioInfo" style="display:none;">
+      <span style="font-size:20px;">🎵</span>
+      <span class="file-name" id="fileName"></span>
+      <span class="file-duration" id="fileDuration"></span>
+      <button class="remove-file" id="removeFile" title="Remove">✕</button>
+    </div>
+    <div class="ref-player" id="refPlayer">
+      <audio controls id="refAudio"></audio>
+    </div>
+    <div class="alert info" id="refTip" style="display:none;">
+      💡 For best results, use 5–15 seconds of clear speech with minimal background noise. Vedic chanting recordings work best.
+    </div>
+  </div>
+
+  <!-- Step 2: Lyrics Input -->
+  <div class="card">
+    <div class="card-title">
+      <span class="step">2</span> Lyrics / Text
+      <span class="title-devanagari">गीत पाठ</span>
+    </div>
+
+    <!-- Language selection -->
+    <div class="lang-row" id="langRow">
+      <button class="lang-btn active" data-lang="sa" id="lang-sa">
+        🕉️ Sanskrit · संस्कृतम्
+      </button>
+      <button class="lang-btn" data-lang="hi" id="lang-hi">
+        🇮🇳 Hindi · हिन्दी
+      </button>
+    </div>
+
+    <!-- Script toggle -->
+    <div class="script-toggle" id="scriptToggle">
+      <button class="script-btn active" data-script="devanagari">देवनागरी</button>
+      <button class="script-btn" data-script="iast">IAST</button>
+      <button class="script-btn" data-script="roman">Roman</button>
+    </div>
+
+    <textarea class="text-area" id="textInput"
+      placeholder="देवनागरी या IAST में पाठ लिखें...&#10;&#10;उदाहरण: ॐ भूर्भुवः स्वः तत्सवितुर्वरेण्यं भर्गो देवस्य धीमहि धियो यो नः प्रचोदयात्&#10;&#10;Example (IAST): oṁ bhūr bhuvaḥ svaḥ tat savitur vareṇyaṁ bhargo devasya dhīmahi dhiyo yo naḥ pracodayāt"></textarea>
+    <div class="char-count"><span id="charCount">0</span> / 50,000 characters</div>
+  </div>
+
+  <!-- Step 3: Musical Parameters -->
+  <div class="card">
+    <div class="card-title">
+      <span class="step">3</span> Musical Parameters
+      <span class="title-devanagari">संगीत मापदण्ड</span>
+    </div>
+
+    <!-- Tabs: Composition vs Phonetics -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="composition" id="tab-composition">🎶 Composition</button>
+      <button class="tab-btn" data-tab="phonetics" id="tab-phonetics">📖 Vedic Phonetics</button>
+    </div>
+
+    <!-- Composition Tab -->
+    <div class="tab-content active" id="content-composition">
+      <div class="param-grid">
+        <div class="param-group">
+          <label>Rāga (Sur) · राग</label>
+          <select class="param-select" id="ragaSelect">
+            <option value="bhairavi">Bhairavī · भैरवी — devotional, emotional</option>
+            <option value="yaman">Yaman · यमन — evening, romantic</option>
+            <option value="bhairav">Bhairav · भैरव — morning, devotional</option>
+            <option value="malkaus">Mālkauṃs · मालकौंस — late night, deep</option>
+            <option value="darbari">Darbārī Kānaḍā · दरबारी कानडा — majestic</option>
+            <option value="todi">Toḍī · तोडी — late morning, pathos</option>
+            <option value="kafi">Kāfī · काफ़ी — light, romantic</option>
+            <option value="bageshri">Bāgeśrī · बागेश्री — night, tender</option>
+            <option value="desh">Desh · देश — monsoon, patriotic</option>
+            <option value="khamaj">Khamāj · खमाज — evening, light</option>
+          </select>
+        </div>
+        <div class="param-group">
+          <label>Chhand (Meter) · छन्द</label>
+          <select class="param-select" id="chhandSelect">
+            <option value="gayatri">Gāyatrī · गायत्री — 3×8 syllables</option>
+            <option value="anushtubh">Anuṣṭubh / Śloka · अनुष्टुभ् — 4×8 syllables</option>
+            <option value="trishtubh">Triṣṭubh · त्रिष्टुभ् — 4×11 syllables</option>
+            <option value="jagati">Jagatī · जगती — 4×12 syllables</option>
+            <option value="malini">Mālinī · मालिनी — 15 per pāda</option>
+            <option value="vasantatilaka">Vasantatilakā · वसन्ततिलका — 14 per pāda</option>
+            <option value="sardula">Śārdūlavikrīḍita · शार्दूलविक्रीडित — 19 per pāda</option>
+            <option value="mandakranta">Mandākrāntā · मन्दाक्रान्ता — 17 per pāda</option>
+            <option value="free">Free / Prose · गद्य — no fixed meter</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="param-grid">
+        <div class="param-group">
+          <label>Tāla (Rhythm Cycle) · ताल</label>
+          <select class="param-select" id="talaSelect">
+            <option value="tintal">Tīntāl · तीनताल — 16 beats</option>
+            <option value="jhaptal">Jhaptāl · झपताल — 10 beats</option>
+            <option value="ektal">Ēktāl · एकताल — 12 beats</option>
+            <option value="rupak">Rūpak · रूपक — 7 beats</option>
+            <option value="dadra">Dādrā · दादरा — 6 beats</option>
+            <option value="keharwa">Kēharvā · कहरवा — 8 beats</option>
+            <option value="none">No Tāla — free rhythm</option>
+          </select>
+        </div>
+        <div class="param-group">
+          <label>Tempo (Laya) · लय</label>
+          <div class="tempo-row">
+            <button class="tempo-btn" data-tempo="vilambit">Vilambit · विलम्बित (Slow)</button>
+            <button class="tempo-btn active" data-tempo="madhya">Madhya · मध्य (Medium)</button>
+            <button class="tempo-btn" data-tempo="drut">Drut · द्रुत (Fast)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phonetics Tab -->
+    <div class="tab-content" id="content-phonetics">
+      <div class="alert info visible" style="display:flex;">
+        <span>📖</span>
+        <span>Enter Sanskrit text above and click <strong>Analyze Phonetics</strong> to get a complete Vedic phonetic breakdown with mātrā durations, svara pitch annotations, articulatory positions, and chhandas analysis.</span>
+      </div>
+      <button class="generate-btn" id="analyzeBtn" style="background:linear-gradient(135deg, #6898c8 0%, #4a78a8 100%); margin-top: 12px;" disabled>
+        📖 Analyze Vedic Phonetics
+      </button>
+      <div class="analysis-panel" id="analysisPanel">
+        <div class="analysis-header">🔬 Phonetic Analysis · ध्वनि विश्लेषण</div>
+        <div id="analysisContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4: Generate -->
+  <div class="card">
+    <div class="card-title">
+      <span class="step">4</span> Generate
+      <span class="title-devanagari">उत्पादन</span>
+    </div>
+    <button class="generate-btn" id="generateBtn" disabled>
+      🕉️ Generate Voice · स्वर उत्पन्न करें
+    </button>
+    <div class="progress-bar" id="progressBar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="status-text" id="statusMsg"></div>
+    <div class="alert error" id="errorAlert"></div>
+  </div>
+
+  <!-- Step 5: Output -->
+  <div class="card output-section" id="outputSection">
+    <div class="card-title">
+      <span class="step">5</span> Generated Audio
+      <span class="title-devanagari">उत्पन्न ध्वनि</span>
+    </div>
+    <div class="output-player">
+      <audio controls id="outputAudio"></audio>
+      <div class="download-row">
+        <a class="download-btn" id="downloadWav" download>⬇ Download WAV</a>
+      </div>
+    </div>
+    <div class="alert success visible" style="margin-top:12px;">
+      <span>✅</span>
+      <span id="genDoneText">Audio generated successfully!</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-sanskrit">ॐ वाग्देव्यै नमः</div>
+    <p>Vedic Voice Studio — Powered by Voicebox AI Engine</p>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// Vedic Voice Studio — Client-side application logic
+// Connects to the Voicebox backend at localhost:8000
+// ══════════════════════════════════════════════════════════
+
+const API = new URLSearchParams(location.search).get('api') ||
+  (location.protocol.startsWith('http') ? location.origin : 'http://127.0.0.1:8000');
+
+// State
+let state = {
+  file: null,
+  profileId: null,
+  sampleId: null,
+  engine: 'indicf5',     // Primary engine for Indic languages
+  language: 'sa',        // sa = Sanskrit, hi = Hindi
+  script: 'devanagari',
+  raga: 'bhairavi',
+  chhand: 'gayatri',
+  tala: 'tintal',
+  tempo: 'madhya',
+  generating: false,
+  lastGenId: null,
+};
+
+// Elements
+const $ = id => document.getElementById(id);
+const dropZone = $('dropZone');
+const audioInput = $('audioInput');
+const audioInfo = $('audioInfo');
+const fileName = $('fileName');
+const fileDuration = $('fileDuration');
+const refPlayer = $('refPlayer');
+const refAudio = $('refAudio');
+const textInput = $('textInput');
+const charCount = $('charCount');
+const generateBtn = $('generateBtn');
+const analyzeBtn = $('analyzeBtn');
+const progressBar = $('progressBar');
+const progressFill = $('progressFill');
+const statusMsg = $('statusMsg');
+const errorAlert = $('errorAlert');
+const outputSection = $('outputSection');
+const outputAudio = $('outputAudio');
+const downloadWav = $('downloadWav');
+const refTip = $('refTip');
+
+const MAX_CHUNK_CHARS = 400;
+
+// Engine → model_name mapping for backend API
+const ENGINE_MODEL = {
+  indicf5: 'indicf5',
+  xtts: 'xtts-v2',
+  chatterbox: 'chatterbox-tts',
+  luxtts: 'luxtts',
+  chatterbox_turbo: 'chatterbox-turbo',
+  qwen: 'qwen-tts-1.7B',
+};
+
+// Engine descriptions for info panel
+const ENGINE_INFO = {
+  indicf5: {
+    icon: '🏛️', name: 'IndicF5 (AI4Bharat)',
+    desc: "Best for Sanskrit/Hindi. F5-TTS trained on 1,400+ hours of Indian speech. Accepts Devanagari directly. Requires ~2GB VRAM or 8GB+ RAM.",
+    sr: '24,000 Hz', languages: 'Hindi, Sanskrit, Bengali, Gujarati, Marathi, Punjabi, Tamil, Telugu, Kannada, Malayalam, Odia, Assamese',
+  },
+  xtts: {
+    icon: '🌍', name: 'XTTS v2 (Coqui)',
+    desc: "Multilingual zero-shot voice cloning. Natively supports Hindi among 17 languages. 6-second minimum reference. Requires ~2GB VRAM.",
+    sr: '24,000 Hz', languages: 'Hindi + 16 languages (English, Spanish, French, German, Italian, etc.)',
+  },
+  chatterbox: {
+    icon: '💬', name: 'Chatterbox (ResembleAI)',
+    desc: "Multilingual voice cloning with emotion tags. Supports Hindi among 23 languages. Requires ~3GB VRAM.",
+    sr: '24,000 Hz', languages: 'Hindi + 22 languages',
+  },
+  luxtts: {
+    icon: '⚡', name: 'LuxTTS (ZipVoice)',
+    desc: "Fast CPU-friendly engine. English only — Sanskrit/Hindi text will be phonetically approximated. 48kHz output.",
+    sr: '48,000 Hz', languages: 'English only (Indic text not natively supported)',
+  },
+};
+
+// Engine → language code sent to backend
+function getApiLanguage() {
+  const eng = state.engine;
+  const lang = state.language;
+  // IndicF5: native Indic support — pass sa/hi directly
+  if (eng === 'indicf5') return lang;
+  // XTTS: native Hindi, Sanskrit → Hindi
+  if (eng === 'xtts') return lang === 'sa' ? 'hi' : lang;
+  // Chatterbox: has Hindi
+  if (eng === 'chatterbox') return lang === 'sa' ? 'hi' : lang;
+  // LuxTTS: English only
+  return 'en';
+}
+
+// ══ VEDIC PHONETIC ANALYSIS ENGINE ══════════════════════
+
+const DEVANAGARI_VOWELS = {
+  'अ': { iast: 'a', matra: 1, type: 'hrasva' },
+  'आ': { iast: 'ā', matra: 2, type: 'dīrgha' },  'ा': { iast: 'ā', matra: 2, type: 'dīrgha' },
+  'इ': { iast: 'i', matra: 1, type: 'hrasva' },
+  'ई': { iast: 'ī', matra: 2, type: 'dīrgha' },  'ी': { iast: 'ī', matra: 2, type: 'dīrgha' },
+  'उ': { iast: 'u', matra: 1, type: 'hrasva' },
+  'ऊ': { iast: 'ū', matra: 2, type: 'dīrgha' },  'ू': { iast: 'ū', matra: 2, type: 'dīrgha' },
+  'ऋ': { iast: 'ṛ', matra: 1, type: 'hrasva' },  'ृ': { iast: 'ṛ', matra: 1, type: 'hrasva' },
+  'ॠ': { iast: 'ṝ', matra: 2, type: 'dīrgha' },
+  'ए': { iast: 'e', matra: 2, type: 'dīrgha' },  'े': { iast: 'e', matra: 2, type: 'dīrgha' },
+  'ऐ': { iast: 'ai', matra: 2, type: 'dīrgha' }, 'ै': { iast: 'ai', matra: 2, type: 'dīrgha' },
+  'ओ': { iast: 'o', matra: 2, type: 'dīrgha' },  'ो': { iast: 'o', matra: 2, type: 'dīrgha' },
+  'औ': { iast: 'au', matra: 2, type: 'dīrgha' }, 'ौ': { iast: 'au', matra: 2, type: 'dīrgha' },
+};
+
+const CONSONANT_STHANA = {
+  'क': 'Kaṇṭhya', 'ख': 'Kaṇṭhya', 'ग': 'Kaṇṭhya', 'घ': 'Kaṇṭhya', 'ङ': 'Kaṇṭhya',
+  'च': 'Tālavya', 'छ': 'Tālavya', 'ज': 'Tālavya', 'झ': 'Tālavya', 'ञ': 'Tālavya',
+  'ट': 'Mūrdhanya', 'ठ': 'Mūrdhanya', 'ड': 'Mūrdhanya', 'ढ': 'Mūrdhanya', 'ण': 'Mūrdhanya',
+  'त': 'Dantya', 'थ': 'Dantya', 'द': 'Dantya', 'ध': 'Dantya', 'न': 'Dantya',
+  'प': 'Oṣṭhya', 'फ': 'Oṣṭhya', 'ब': 'Oṣṭhya', 'भ': 'Oṣṭhya', 'म': 'Oṣṭhya',
+  'य': 'Tālavya', 'र': 'Mūrdhanya', 'ल': 'Dantya', 'व': 'Dantya-Oṣṭhya',
+  'श': 'Tālavya', 'ष': 'Mūrdhanya', 'स': 'Dantya', 'ह': 'Kaṇṭhya',
+};
+
+const ASPIRATED = new Set('खघछझठढथधफभ'.split(''));
+
+const CHHANDAS_INFO = {
+  gayatri:        { name: 'Gāyatrī', padas: 3, syllables: 8, desc: '3 pādas × 8 syllables = 24 total' },
+  anushtubh:      { name: 'Anuṣṭubh', padas: 4, syllables: 8, desc: '4 pādas × 8 syllables = 32 total' },
+  trishtubh:      { name: 'Triṣṭubh', padas: 4, syllables: 11, desc: '4 pādas × 11 syllables = 44 total' },
+  jagati:         { name: 'Jagatī', padas: 4, syllables: 12, desc: '4 pādas × 12 syllables = 48 total' },
+  malini:         { name: 'Mālinī', padas: 4, syllables: 15, desc: '15 syllables per pāda' },
+  vasantatilaka:  { name: 'Vasantatilakā', padas: 4, syllables: 14, desc: '14 syllables per pāda' },
+  sardula:        { name: 'Śārdūlavikrīḍita', padas: 4, syllables: 19, desc: '19 syllables per pāda' },
+  mandakranta:    { name: 'Mandākrāntā', padas: 4, syllables: 17, desc: '17 syllables per pāda' },
+  free:           { name: 'Free / Prose', padas: 0, syllables: 0, desc: 'No fixed meter' },
+};
+
+function analyzePhonetics(text) {
+  const syllables = [];
+  let i = 0;
+  const chars = [...text];
+
+  while (i < chars.length) {
+    const ch = chars[i];
+
+    // Skip spaces, punctuation, and control chars
+    if (/[\s।॥\|,\.!\?;:\-–—·\n\r]/.test(ch)) { i++; continue; }
+
+    // Anusvāra / Visarga as modifiers of previous syllable
+    if ((ch === 'ं' || ch === 'ँ' || ch === 'ः') && syllables.length > 0) {
+      const prev = syllables[syllables.length - 1];
+      prev.devanagari += ch;
+      prev.iast += ch === 'ं' ? 'ṁ' : ch === 'ँ' ? '~' : 'ḥ';
+      prev.matra = 2; // becomes guru
+      prev.notes += ch === 'ं' ? ' +anusvāra' : ch === 'ँ' ? ' +candrabindu' : ' +visarga';
+      i++;
+      continue;
+    }
+
+    // Halanta (virāma) — suppresses inherent 'a'
+    if (ch === '्' && syllables.length > 0) {
+      const prev = syllables[syllables.length - 1];
+      prev.devanagari += ch;
+      prev.iast = prev.iast.replace(/a$/, '');
+      prev.matra = Math.max(1, prev.matra - 1);
+      i++;
+      continue;
+    }
+
+    // Independent vowel
+    if (DEVANAGARI_VOWELS[ch] && !'ािीुूृेैोौ'.includes(ch)) {
+      const v = DEVANAGARI_VOWELS[ch];
+      syllables.push({
+        devanagari: ch,
+        iast: v.iast,
+        matra: v.matra,
+        type: v.type,
+        svara: 'Udātta',
+        sthana: '—',
+        prana: '—',
+        notes: `${v.type} svara`,
+      });
+      i++;
+      continue;
+    }
+
+    // Consonant
+    if (CONSONANT_STHANA[ch]) {
+      let syl = ch;
+      let iast_syl = ch;
+      let sthana = CONSONANT_STHANA[ch] || '—';
+      let prana = ASPIRATED.has(ch) ? 'Mahāprāṇa' : 'Alpaprāṇa';
+
+      i++;
+      // Check for vowel mātrā
+      if (i < chars.length && 'ािीुूृेैोौ'.includes(chars[i])) {
+        const vm = DEVANAGARI_VOWELS[chars[i]];
+        syl += chars[i];
+        iast_syl += vm ? vm.iast : chars[i];
+        syllables.push({
+          devanagari: syl,
+          iast: iast_syl,
+          matra: vm ? vm.matra : 1,
+          type: vm ? vm.type : 'hrasva',
+          svara: 'Udātta',
+          sthana,
+          prana,
+          notes: `${sthana}, ${prana}`,
+        });
+        i++;
+      } else if (i < chars.length && chars[i] === '्') {
+        // Halanta — conjunct consonant start
+        syl += chars[i];
+        iast_syl += '';
+        syllables.push({
+          devanagari: syl,
+          iast: iast_syl,
+          matra: 0,
+          type: 'conjunct',
+          svara: '—',
+          sthana,
+          prana,
+          notes: `conjunct start (${sthana})`,
+        });
+        i++;
+      } else {
+        // Inherent 'a'
+        syllables.push({
+          devanagari: syl,
+          iast: iast_syl + 'a',
+          matra: 1,
+          type: 'hrasva',
+          svara: 'Udātta',
+          sthana,
+          prana,
+          notes: `${sthana}, ${prana}, inherent a`,
+        });
+      }
+      continue;
+    }
+
+    // OM symbol
+    if (ch === 'ॐ') {
+      syllables.push({
+        devanagari: ch,
+        iast: 'oṁ',
+        matra: 2,
+        type: 'dīrgha',
+        svara: 'Udātta',
+        sthana: 'Kaṇṭhya-Oṣṭhya',
+        prana: '—',
+        notes: 'praṇava, sacred syllable',
+      });
+      i++;
+      continue;
+    }
+
+    i++; // skip unknown
+  }
+
+  // Apply gurū rule: short vowel before conjunct becomes 2 mātrā
+  for (let s = 0; s < syllables.length - 1; s++) {
+    if (syllables[s].matra === 1 && syllables[s + 1].type === 'conjunct') {
+      syllables[s].matra = 2;
+      syllables[s].notes += ' [gurū by saṁyoga]';
+    }
+  }
+
+  // Assign svara pattern (simplified Vedic 3-tone)
+  for (let s = 0; s < syllables.length; s++) {
+    if (s % 4 === 0) syllables[s].svara = 'Udātta';
+    else if (s % 4 === 1) syllables[s].svara = 'Svarita';
+    else if (s % 4 === 2) syllables[s].svara = 'Anudātta';
+    else syllables[s].svara = 'Udātta';
+  }
+
+  return syllables;
+}
+
+function renderAnalysis(syllables) {
+  const chhand = CHHANDAS_INFO[state.chhand];
+  let html = '';
+
+  // Chhandas info
+  html += `<div class="chhandas-box" style="margin-bottom:16px;">
+    <div class="chhandas-label">Chandas (Meter)</div>
+    <strong style="color:var(--gold)">${chhand.name}</strong> — ${chhand.desc}
+    <br>Total syllables in text: <strong>${syllables.filter(s => s.matra > 0).length}</strong>
+    <br>Total mātrās: <strong>${syllables.reduce((a, s) => a + s.matra, 0)}</strong>
+  </div>`;
+
+  // Phonetic grid table
+  html += `<div style="overflow-x:auto;">
+  <table class="analysis-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>देवनागरी</th>
+        <th>IAST</th>
+        <th>Mātrā</th>
+        <th>Svara</th>
+        <th>Sthāna</th>
+        <th>Prāṇa</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  syllables.forEach((s, idx) => {
+    const matraClass = s.matra >= 2 ? 'matra-2' : 'matra-1';
+    const svaraClass = s.svara === 'Svarita' ? 'svara-svarita' :
+                       s.svara === 'Anudātta' ? 'svara-anudatta' : 'svara-udatta';
+    html += `<tr>
+      <td style="color:var(--text-muted)">${idx + 1}</td>
+      <td style="font-size:16px;font-weight:600;">${s.devanagari}</td>
+      <td>${s.iast}</td>
+      <td class="${matraClass}">${s.matra}</td>
+      <td class="${svaraClass}">${s.svara}</td>
+      <td style="font-size:12px;">${s.sthana}</td>
+      <td style="font-size:12px;">${s.prana}</td>
+      <td style="font-size:11px;color:var(--text-muted);">${s.notes}</td>
+    </tr>`;
+  });
+
+  html += '</tbody></table></div>';
+
+  // Vocal warnings
+  html += `<div class="chhandas-box" style="margin-top:16px;">
+    <div class="chhandas-label">⚠️ Vocal Warnings & Execution Tips</div>
+    <ul style="margin:8px 0 0 16px; font-size:13px; color:var(--text-secondary); line-height:1.8;">
+      <li>Maintain <strong>madhyama-laya</strong> (middle tempo) — avoid rushing (śīghrī doṣa)</li>
+      <li>Visarga (ḥ) must be a <em>soft echo</em> of the preceding vowel, not a harsh aspirate</li>
+      <li>Anusvāra (ṁ) = pure nasal resonance through the nose, tongue does not touch palate</li>
+      <li>Retroflexes (ṭ, ḍ, ṇ, ṣ) require curling the tongue tip <em>back</em> to the roof of the mouth</li>
+      <li>Dentals (t, d, n, s) place the tongue tip against the <em>upper front teeth</em></li>
+      <li>Take a clean breath at each pāda boundary (yati) — never break mid-word</li>
+    </ul>
+  </div>`;
+
+  return html;
+}
+
+// ══ INITIALIZATION ══════════════════════════════════════
+
+async function init() {
+  await checkHealth();
+  setupEventListeners();
+  updateGenerateBtn();
+}
+
+async function checkHealth() {
+  try {
+    const res = await fetch(`${API}/health`);
+    if (!res.ok) throw new Error('Backend not responding');
+    const h = await res.json();
+
+    $('statusDot').className = 'status-dot green';
+    $('statusText').textContent = 'Connected';
+    $('deviceInfo').textContent = h.gpu_type || 'CPU';
+    $('backendInfo').textContent = h.backend_type || 'pytorch';
+
+    $('modelPanel').style.display = 'block';
+    $('mp-device').textContent = h.gpu_type || 'CPU';
+    $('mp-vram').textContent = h.vram_used_mb ? `${Math.round(h.vram_used_mb)} MB` : 'N/A (CPU)';
+    $('mp-gpu').textContent = h.gpu_available ? 'Active' : 'Not available (CPU mode)';
+
+    await checkModelStatus();
+  } catch (e) {
+    $('statusDot').className = 'status-dot red';
+    $('statusText').textContent = 'Backend offline';
+    showError(`Backend is not reachable at ${API}. Start it from the voicebox folder with: backend/venv/bin/python -m backend.main`);
+  }
+}
+
+async function checkModelStatus() {
+  try {
+    const res = await fetch(`${API}/models/status`);
+    if (!res.ok) return;
+    const data = await res.json();
+    const models = data.models || [];
+    const modelName = ENGINE_MODEL[state.engine];
+    const model = models.find(m => m.model_name === modelName);
+    const info = ENGINE_INFO[state.engine];
+
+    if (model) {
+      $('modelInfo').textContent = model.display_name + (model.downloaded ? ' ✓' : ' (not downloaded)');
+      $('mp-model').textContent = model.display_name;
+      $('mp-engine').textContent = info?.name || state.engine;
+      $('mp-size').textContent = model.size_mb ? `${Math.round(model.size_mb)} MB` : (model.downloaded ? 'Downloaded' : 'Not downloaded');
+      $('mp-sr').textContent = info?.sr || '24,000 Hz';
+
+      if (model.loaded) {
+        $('mp-model').textContent = model.display_name + ' (loaded)';
+      } else if (model.downloaded) {
+        warmUpModel();
+      }
+    } else {
+      // Model not yet registered in backend — show engine info anyway
+      $('modelInfo').textContent = (info?.name || state.engine) + ' (not downloaded)';
+      $('mp-model').textContent = info?.name || modelName;
+      $('mp-engine').textContent = info?.name || state.engine;
+      $('mp-sr').textContent = info?.sr || '24,000 Hz';
+    }
+  } catch (e) {
+    console.warn('Could not check model status:', e);
+  }
+}
+
+// Model warm-up
+let warmup = null;
+let warmupTried = false;
+
+function warmUpModel() {
+  if (warmupTried) return;
+  warmupTried = true;
+  const modelName = ENGINE_MODEL[state.engine];
+  $('mp-model').textContent += ' (loading…)';
+  warmup = fetch(`${API}/models/load`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model_name: modelName }),
+  })
+    .then(res => { if (!res.ok) console.warn('Model warm-up failed:', res.status); })
+    .catch(e => console.warn('Model warm-up failed:', e))
+    .finally(() => { warmup = null; warmupTried = false; checkModelStatus(); });
+}
+
+function updateEngineUI() {
+  // Update engine buttons
+  document.querySelectorAll('#engineRow .lang-btn').forEach(b => b.classList.remove('active'));
+  const btn = $(`eng-${state.engine}`);
+  if (btn) btn.classList.add('active');
+
+  // Update engine note
+  const info = ENGINE_INFO[state.engine];
+  if (info) {
+    $('engineNote').innerHTML = `<span>${info.icon}</span><span><strong>${info.name}</strong> — ${info.desc}</span>`;
+  }
+
+  // Reset warm-up state for new engine
+  warmupTried = false;
+  warmup = null;
+
+  // Refresh model status
+  checkModelStatus();
+}
+
+// ══ EVENT LISTENERS ═════════════════════════════════════
+
+function setupEventListeners() {
+  // Drop zone
+  dropZone.addEventListener('click', () => audioInput.click());
+  audioInput.addEventListener('change', handleFileSelect);
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault(); dropZone.classList.remove('drag-over');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+
+  // Remove file
+  $('removeFile').addEventListener('click', removeFile);
+
+  // Text input
+  textInput.addEventListener('input', () => {
+    charCount.textContent = textInput.value.length;
+    updateGenerateBtn();
+  });
+
+  // Engine selector
+  document.querySelectorAll('#engineRow .lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.engine = btn.dataset.engine;
+      updateEngineUI();
+    });
+  });
+
+  // Language selection
+  document.querySelectorAll('#langRow .lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#langRow .lang-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.language = btn.dataset.lang;
+      updatePlaceholder();
+    });
+  });
+
+  // Script toggle
+  document.querySelectorAll('.script-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.script-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.script = btn.dataset.script;
+    });
+  });
+
+  // Rāga / Chhand / Tāla selects
+  $('ragaSelect').addEventListener('change', e => { state.raga = e.target.value; });
+  $('chhandSelect').addEventListener('change', e => { state.chhand = e.target.value; });
+  $('talaSelect').addEventListener('change', e => { state.tala = e.target.value; });
+
+  // Tempo buttons
+  document.querySelectorAll('.tempo-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tempo-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.tempo = btn.dataset.tempo;
+    });
+  });
+
+  // Tabs
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      $(`content-${btn.dataset.tab}`).classList.add('active');
+    });
+  });
+
+  // Analyze phonetics button
+  analyzeBtn.addEventListener('click', () => {
+    const text = textInput.value.trim();
+    if (!text) return;
+    const syllables = analyzePhonetics(text);
+    $('analysisContent').innerHTML = renderAnalysis(syllables);
+    $('analysisPanel').classList.add('visible');
+  });
+
+  // Generate
+  generateBtn.addEventListener('click', generate);
+}
+
+function updatePlaceholder() {
+  if (state.language === 'sa') {
+    textInput.placeholder = 'देवनागरी या IAST में संस्कृत पाठ लिखें...\n\nउदाहरण: ॐ भूर्भुवः स्वः तत्सवितुर्वरेण्यं भर्गो देवस्य धीमहि धियो यो नः प्रचोदयात्\n\nExample (IAST): oṁ bhūr bhuvaḥ svaḥ tat savitur vareṇyaṁ bhargo devasya dhīmahi dhiyo yo naḥ pracodayāt';
+  } else {
+    textInput.placeholder = 'हिन्दी में गीत या पाठ लिखें...\n\nउदाहरण: वन्दे मातरम् सुजलां सुफलां मलयजशीतलाम्\n\nExample: Vande Mātaram sujalāṁ suphalāṁ malayajaśītalām';
+  }
+}
+
+// ══ FILE HANDLING ═══════════════════════════════════════
+
+function handleFileSelect(e) {
+  if (e.target.files.length) handleFile(e.target.files[0]);
+}
+
+async function handleFile(file) {
+  const allowed = ['.wav','.mp3','.m4a','.flac','.ogg','.aac','.webm','.opus'];
+  const ext = '.' + file.name.split('.').pop().toLowerCase();
+  if (!allowed.includes(ext)) {
+    showError(`Unsupported format: ${ext}. Supported: ${allowed.join(', ')}`);
+    return;
+  }
+  if (file.size > 50 * 1024 * 1024) {
+    showError('File too large. Maximum 50 MB.');
+    return;
+  }
+
+  state.file = file;
+  dropZone.classList.add('has-file');
+  dropZone.querySelector('.drop-zone-icon').textContent = '✅';
+  dropZone.querySelector('.drop-zone-text').innerHTML = '<strong>File loaded</strong>';
+
+  fileName.textContent = file.name;
+  audioInfo.style.display = 'flex';
+
+  const url = URL.createObjectURL(file);
+  refAudio.src = url;
+  refPlayer.classList.add('visible');
+  refTip.style.display = 'flex';
+  refTip.classList.add('visible');
+
+  refAudio.addEventListener('loadedmetadata', () => {
+    const dur = refAudio.duration;
+    fileDuration.textContent = dur < 60
+      ? `${dur.toFixed(1)}s`
+      : `${Math.floor(dur / 60)}m ${Math.round(dur % 60)}s`;
+  }, { once: true });
+
+  hideError();
+  updateGenerateBtn();
+
+  setStatus('Preparing reference audio...');
+  const prepared = await prepareReference(file);
+  if (state.file !== file) return;
+  await createProfileAndUpload(prepared.file, prepared.note);
+}
+
+// ══ REFERENCE PREPARATION ═══════════════════════════════
+
+const MAX_REF_SECONDS = 30;
+const REF_SEGMENT_SECONDS = 12;
+
+async function prepareReference(file) {
+  let audio;
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  try {
+    audio = await ctx.decodeAudioData(await file.arrayBuffer());
+  } catch (e) {
+    return { file, note: '' };
+  } finally {
+    ctx.close();
+  }
+  if (audio.duration <= MAX_REF_SECONDS) return { file, note: '' };
+
+  const sr = audio.sampleRate;
+  const mono = new Float32Array(audio.length);
+  for (let c = 0; c < audio.numberOfChannels; c++) {
+    const data = audio.getChannelData(c);
+    for (let i = 0; i < mono.length; i++) mono[i] += data[i] / audio.numberOfChannels;
+  }
+
+  const frameLen = Math.round(sr * 0.05);
+  const frames = Math.floor(mono.length / frameLen);
+  const rms = new Float32Array(frames);
+  for (let f = 0; f < frames; f++) {
+    let sum = 0;
+    for (let i = f * frameLen, end = i + frameLen; i < end; i++) sum += mono[i] * mono[i];
+    rms[f] = Math.sqrt(sum / frameLen);
+  }
+  const threshold = 0.25 * Array.from(rms).sort((a, b) => a - b)[Math.floor(frames * 0.9)];
+
+  const win = Math.round(REF_SEGMENT_SECONDS / 0.05);
+  let bestStart = 0, bestScore = -1;
+  for (let start = 0; start + win <= frames; start += 10) {
+    let voiced = 0, energy = 0;
+    for (let f = start; f < start + win; f++) {
+      if (rms[f] > threshold) { voiced++; energy += rms[f]; }
+    }
+    const score = voiced ? (voiced / win) * (energy / voiced) : 0;
+    if (score > bestScore) { bestScore = score; bestStart = start; }
+  }
+
+  const from = bestStart * frameLen;
+  const segment = mono.subarray(from, from + win * frameLen);
+  const t0 = bestStart * 0.05;
+  const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  return {
+    file: new File([encodeWav(segment, sr)], 'reference_segment.wav', { type: 'audio/wav' }),
+    note: `clearest ${REF_SEGMENT_SECONDS}s (${fmt(t0)}–${fmt(t0 + REF_SEGMENT_SECONDS)})`,
+  };
+}
+
+function encodeWav(samples, sampleRate) {
+  const buf = new ArrayBuffer(44 + samples.length * 2);
+  const v = new DataView(buf);
+  const str = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  str(0, 'RIFF'); v.setUint32(4, 36 + samples.length * 2, true); str(8, 'WAVE');
+  str(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, sampleRate, true); v.setUint32(28, sampleRate * 2, true);
+  v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+  str(36, 'data'); v.setUint32(40, samples.length * 2, true);
+  for (let i = 0; i < samples.length; i++) {
+    const s = Math.max(-1, Math.min(1, samples[i]));
+    v.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+  }
+  return buf;
+}
+
+function removeFile() {
+  state.file = null;
+  state.profileId = null;
+  state.sampleId = null;
+  audioInput.value = '';
+  dropZone.classList.remove('has-file');
+  dropZone.querySelector('.drop-zone-icon').textContent = '🎤';
+  dropZone.querySelector('.drop-zone-text').innerHTML = '<strong>Click to upload</strong> or drag & drop';
+  audioInfo.style.display = 'none';
+  refPlayer.classList.remove('visible');
+  refTip.style.display = 'none';
+  refAudio.src = '';
+  updateGenerateBtn();
+}
+
+// ══ PROFILE MANAGEMENT ══════════════════════════════════
+
+async function createProfileAndUpload(file, note = '') {
+  setStatus('Creating voice profile...');
+
+  try {
+    const profilesRes = await fetch(`${API}/profiles`);
+    const profiles = await profilesRes.json();
+    let profile = profiles.find(p => p.name === 'Vedic Voice Session');
+
+    if (!profile) {
+      const createRes = await fetch(`${API}/profiles`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'Vedic Voice Session',
+          description: 'Auto-created by Vedic Voice Studio for Sanskrit/Hindi voice cloning',
+          language: getApiLanguage(),
+          default_engine: state.engine,
+        }),
+      });
+      if (!createRes.ok) {
+        const err = await createRes.json();
+        throw new Error(err.detail || 'Failed to create profile');
+      }
+      profile = await createRes.json();
+    } else {
+      const samplesRes = await fetch(`${API}/profiles/${profile.id}/samples`);
+      const samples = await samplesRes.json();
+      for (const s of samples) {
+        await fetch(`${API}/profiles/samples/${s.id}`, { method: 'DELETE' });
+      }
+    }
+
+    state.profileId = profile.id;
+    setStatus('Uploading reference audio...');
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('reference_text', 'Reference audio for Vedic voice cloning');
+
+    const uploadRes = await fetch(`${API}/profiles/${profile.id}/samples`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!uploadRes.ok) {
+      const err = await uploadRes.json();
+      throw new Error(err.detail || 'Failed to upload audio');
+    }
+
+    const sample = await uploadRes.json();
+    state.sampleId = sample.id;
+
+    setStatus(`✅ Reference audio ready${note ? ` — using the ${note}` : ''}`);
+    updateGenerateBtn();
+
+  } catch (e) {
+    showError(`Failed to upload reference: ${e.message}`);
+    setStatus('');
+  }
+}
+
+// ══ GENERATION ══════════════════════════════════════════
+
+async function generate() {
+  if (state.generating || !state.profileId || !textInput.value.trim()) return;
+
+  state.generating = true;
+  generateBtn.disabled = true;
+  generateBtn.innerHTML = '<span class="spinner"></span> Generating...';
+  hideError();
+  outputSection.classList.remove('visible');
+  showProgress(true);
+
+  try {
+    setStatus('Checking model...');
+    const modelRes = await fetch(`${API}/models/status`);
+    const modelData = await modelRes.json();
+    const modelName = ENGINE_MODEL[state.engine];
+    const model = (modelData.models || []).find(m => m.model_name === modelName);
+
+    if (model && !model.downloaded) {
+      setStatus(`Downloading ${model.display_name}... This may take a few minutes.`);
+
+      if (!model.downloading) {
+        const dlRes = await fetch(`${API}/models/download`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model_name: modelName }),
+        });
+        if (!dlRes.ok) {
+          const err = await dlRes.json().catch(() => ({}));
+          throw new Error(err.detail || 'Failed to start model download');
+        }
+      }
+
+      await waitForModelDownload(modelName, model.display_name);
+      checkModelStatus();
+    }
+
+    if (warmup) {
+      setStatus('Loading voice model...');
+      await warmup;
+    }
+
+    setStatus('Generating voice with cloned timbre...');
+
+    const genBody = {
+      profile_id: state.profileId,
+      text: textInput.value.trim(),
+      language: getApiLanguage(),
+      engine: state.engine,
+      normalize: true,
+      max_chunk_chars: MAX_CHUNK_CHARS,
+      crossfade_ms: 50,
+    };
+
+    if (state.engine === 'qwen') {
+      genBody.model_size = '1.7B';
+    }
+
+    const genRes = await fetch(`${API}/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(genBody),
+    });
+
+    if (!genRes.ok) {
+      const err = await genRes.json();
+      throw new Error(err.detail || 'Generation failed');
+    }
+
+    const gen = await genRes.json();
+    state.lastGenId = gen.id;
+
+    await pollGenerationStatus(gen.id);
+
+  } catch (e) {
+    showError(e.message);
+    setStatus('');
+  } finally {
+    state.generating = false;
+    generateBtn.disabled = false;
+    generateBtn.innerHTML = '🕉️ Generate Voice · स्वर उत्पन्न करें';
+    showProgress(false);
+    updateGenerateBtn();
+  }
+}
+
+function formatBytes(n) {
+  return n >= 1024 * 1024 * 1024
+    ? `${(n / 1024 / 1024 / 1024).toFixed(2)} GB`
+    : `${(n / 1024 / 1024).toFixed(1)} MB`;
+}
+
+async function waitForModelDownload(modelName, displayName) {
+  return new Promise((resolve, reject) => {
+    let attempts = 0;
+    const maxAttempts = 900;
+    let done = false;
+    const evtSource = new EventSource(`${API}/models/progress/${modelName}`);
+
+    const finish = (err) => {
+      if (done) return;
+      done = true;
+      evtSource.close();
+      progressFill.style.width = '0%';
+      progressFill.classList.add('indeterminate');
+      err ? reject(err) : resolve();
+    };
+
+    evtSource.onmessage = (event) => {
+      try {
+        const p = JSON.parse(event.data);
+        if (p.status === 'error') {
+          finish(new Error(p.error || `${displayName} download failed`));
+        } else if (p.status === 'complete') {
+          setStatus(`${displayName} downloaded!`);
+          finish();
+        } else if (p.total > 0) {
+          progressFill.classList.remove('indeterminate');
+          progressFill.style.width = `${p.progress.toFixed(1)}%`;
+          setStatus(`Downloading ${displayName}... ${formatBytes(p.current)} / ${formatBytes(p.total)} (${p.progress.toFixed(0)}%)`);
+        }
+      } catch (e) {
+        console.error('Progress parse error:', e);
+      }
+    };
+    evtSource.onerror = () => {};
+
+    const check = async () => {
+      if (done) return;
+      try {
+        const res = await fetch(`${API}/models/status`);
+        const data = await res.json();
+        const model = (data.models || []).find(m => m.model_name === modelName);
+        if (model && model.downloaded) { setStatus(`${displayName} downloaded!`); finish(); return; }
+        if (model && !model.downloading && attempts > 3) {
+          finish(new Error(`${displayName} download did not complete.`));
+          return;
+        }
+        attempts++;
+        if (attempts >= maxAttempts) { finish(new Error('Model download timed out')); return; }
+      } catch (e) { /* transient */ }
+      setTimeout(check, 2000);
+    };
+    setTimeout(check, 2000);
+  });
+}
+
+let generationStartedAt = 0;
+
+async function pollGenerationStatus(genId) {
+  generationStartedAt = Date.now();
+  return new Promise((resolve, reject) => {
+    const evtSource = new EventSource(`${API}/generate/${genId}/status`);
+
+    evtSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.status === 'loading_model') {
+          setStatus('Loading voice model...');
+          progressFill.classList.add('indeterminate');
+        } else if (data.status === 'generating') {
+          const secs = Math.round((Date.now() - generationStartedAt) / 1000);
+          const elapsed = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`;
+          setStatus(`Generating voice with cloned timbre... ${elapsed} elapsed`);
+          progressFill.classList.add('indeterminate');
+        } else if (data.status === 'completed') {
+          evtSource.close();
+          progressFill.classList.remove('indeterminate');
+          progressFill.style.width = '100%';
+
+          const dur = data.duration ? `${data.duration.toFixed(1)}s` : '';
+          setStatus(`✅ Done! Generated ${dur} of audio.`);
+          $('genDoneText').textContent = `Audio generated successfully! Duration: ${dur}`;
+
+          const audioUrl = `${API}/audio/${genId}`;
+          outputAudio.src = audioUrl;
+          downloadWav.href = audioUrl;
+          downloadWav.download = `vedic_voice_${genId}.wav`;
+          outputSection.classList.add('visible');
+          outputSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          resolve();
+        } else if (data.status === 'failed') {
+          evtSource.close();
+          reject(new Error(data.error || 'Generation failed'));
+        } else if (data.status === 'not_found') {
+          evtSource.close();
+          reject(new Error('Generation not found'));
+        }
+      } catch (e) {
+        console.error('SSE parse error:', e);
+      }
+    };
+
+    evtSource.onerror = () => {
+      evtSource.close();
+      setTimeout(async () => {
+        try {
+          const res = await fetch(`${API}/audio/${genId}`);
+          if (res.ok) {
+            const audioUrl = `${API}/audio/${genId}`;
+            outputAudio.src = audioUrl;
+            downloadWav.href = audioUrl;
+            downloadWav.download = `vedic_voice_${genId}.wav`;
+            outputSection.classList.add('visible');
+            setStatus('✅ Done!');
+            resolve();
+          } else {
+            reject(new Error('Generation failed or SSE connection lost'));
+          }
+        } catch {
+          reject(new Error('Lost connection to server'));
+        }
+      }, 2000);
+    };
+  });
+}
+
+// ══ UI HELPERS ══════════════════════════════════════════
+
+function updateGenerateBtn() {
+  const hasFile = !!state.profileId;
+  const hasText = textInput.value.trim().length > 0;
+  generateBtn.disabled = !hasFile || !hasText || state.generating;
+  analyzeBtn.disabled = !hasText;
+}
+
+function setStatus(msg) {
+  statusMsg.textContent = msg;
+}
+
+function showError(msg) {
+  errorAlert.replaceChildren();
+  const icon = document.createElement('span');
+  icon.textContent = '❌';
+  const text = document.createElement('span');
+  text.textContent = msg;
+  errorAlert.append(icon, text);
+  errorAlert.classList.add('visible');
+}
+
+function hideError() {
+  errorAlert.classList.remove('visible');
+}
+
+function showProgress(show) {
+  progressBar.classList.toggle('visible', show);
+  if (show) {
+    progressFill.style.width = '0%';
+    progressFill.classList.add('indeterminate');
+  } else {
+    progressFill.classList.remove('indeterminate');
+  }
+}
+
+// ══ START ════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
